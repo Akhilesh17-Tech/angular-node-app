@@ -14,11 +14,13 @@ export class BooksListComponent implements OnInit {
       this.Books = res;
     });
   }
-  delete(id: any, i: any) {
+  delete(id: any) {
     console.log(id);
     if (window.confirm('Do you want to go ahead?')) {
-      this.crudService.deleteBook(id).subscribe((res) => {
-        this.Books.splice(i, 1);
+      this.crudService.deleteBook(id).subscribe(() => {
+        this.crudService.GetBooks().subscribe((res) => {
+          this.Books = res;
+        });
       });
     }
   }

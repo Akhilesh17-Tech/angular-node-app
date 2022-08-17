@@ -41,6 +41,9 @@ module.exports.readBook = async (req, res) => {
 		Book.findById(id, function (err, Book) {
 			if (err) {
 				console.log(err);
+				return res.status(404).json({
+					message: `Book not found with given Id : ${id} please check Id!`,
+				});
 			} else {
 				return res.status(200).json({
 					success: true,
@@ -80,30 +83,25 @@ module.exports.updateBook = async (req, res) => {
 		const { id } = req.params;
 		const { name, price, description } = req.body;
 		console.log(id, "------------------------------------");
-		Book.findById(id, function (err, book) {
-			if (!book) {
-				console.log(err);
-				return res.status(200).json({
-					success: true,
-					message: `No Book found with give id ${id}`,
-				});
+		Book.findByIdAndUpdate(
+			id,
+			{
+				$set: req.body,
+			},
+			(error, data) => {
+				if (error) {
+					console.log(error);
+					return res.status(404).json({
+						message: `Book not found with given Id : ${id} please check Id!`,
+					});
+				} else {
+					return res.status(200).json({
+						success: true,
+						message: `Book updated with given Id : ${id}`,
+					});
+				}
 			}
-			if (name) {
-				book.name = name;
-				console.log(book.name);
-			}
-			if (price) {
-				book.price = price;
-			}
-			if (description) {
-				book.description = description;
-			}
-			return res.status(200).json({
-				success: true,
-				message: `Book has been updated with ${id}`,
-				book: book,
-			});
-		});
+		);
 	} catch (err) {
 		console.log(err);
 		return res.status(500).json({
